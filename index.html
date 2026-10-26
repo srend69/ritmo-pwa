@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ritmo — Hábitos que fluem</title>
+  <meta name="description" content="Um rastreador de hábitos simples, leve e offline. Crie seu ritmo, um dia de cada vez.">
+  <meta name="theme-color" content="#f6f4fb">
+  <meta name="color-scheme" content="light dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Ritmo">
+  <meta name="format-detection" content="telephone=no">
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+
+  <script>
+    (function () {
+      try {
+        var settings = JSON.parse(localStorage.getItem('ritmo.settings.v1') || 'null') || {};
+        var pref = settings.theme || 'system';
+        var dark = pref === 'dark' || (pref === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? '#100e18' : '#f6f4fb');
+      } catch (error) { /* first paint must never fail */ }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="m5 12.5 4.2 4.2L19 6.9"/>
+    </symbol>
+    <symbol id="i-sunrise" viewBox="0 0 24 24">
+      <path d="M12 3v2M5.3 7.3l1.4 1.4M18.7 7.3l-1.4 1.4M3 15h2M19 15h2M7 15a5 5 0 0 1 10 0M3 19h18"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M4 20v-6M10 20V6M16 20v-9M22 20H2"/>
+    </symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24">
+      <path d="M4 7h9M17 7h3M4 17h3M11 17h9"/>
+      <circle cx="15" cy="7" r="2.2"/>
+      <circle cx="9" cy="17" r="2.2"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M12 5v14M5 12h14"/>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24">
+      <path d="m6 6 12 12M18 6 6 18"/>
+    </symbol>
+    <symbol id="i-more" viewBox="0 0 24 24">
+      <circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+      <circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-download" viewBox="0 0 24 24">
+      <path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 19.5h16"/>
+    </symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24">
+      <path d="M12 16V4M7.5 8.5 12 4l4.5 4.5M4 20h16"/>
+    </symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24">
+      <path d="M4 7h16M9 7V5h6v2M6.5 7l.8 13h9.4l.8-13M10 11v5M14 11v5"/>
+    </symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24">
+      <path d="M4 20h4.2L19 9.2a2.4 2.4 0 0 0-3.4-3.4L4.8 16.5 4 20Z"/>
+      <path d="m14.8 6.8 2.4 2.4"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="m9 5 7 7-7 7"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M20 15.2A8.2 8.2 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/>
+    </symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="13" rx="2"/>
+      <path d="M8 21h8M12 17v4"/>
+    </symbol>
+    <symbol id="i-share" viewBox="0 0 24 24">
+      <path d="M12 3v12M8 7l4-4 4 4M6 11H4v9h16v-9h-2"/>
+    </symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24">
+      <path d="M20 7v5h-5M4 17v-5h5"/>
+      <path d="M18.2 11A7 7 0 0 0 6.1 7.1L4 12M5.8 13a7 7 0 0 0 12.1 3.9L20 12"/>
+    </symbol>
+    <symbol id="i-code" viewBox="0 0 24 24">
+      <path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/>
+      <path d="m9.2 12 1.9 1.9 3.8-3.8"/>
+    </symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24">
+      <path d="M12 3c.6 4.9 2.1 6.4 7 7-4.9.6-6.4 2.1-7 7-.6-4.9-2.1-6.4-7-7 4.9-.6 6.4-2.1 7-7Z"/>
+      <path d="M19 16c.2 1.7.8 2.3 2.5 2.5-1.7.2-2.3.8-2.5 2.5-.2-1.7-.8-2.3-2.5-2.5 1.7-.2 2.3-.8 2.5-2.5Z"/>
+    </symbol>
+  </svg>
+
+  <div class="backdrop" aria-hidden="true">
+    <span class="orb orb--one"></span>
+    <span class="orb orb--two"></span>
+    <span class="orb orb--three"></span>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="#hoje" aria-label="Ritmo — ir para o início">
+        <img src="./assets/icons/icon-192.png" alt="" width="34" height="34" class="brand-logo">
+        <span class="brand-name">ritmo<span class="brand-dot">.</span></span>
+      </a>
+      <div class="topbar-actions">
+        <button id="install-top" class="icon-btn install-top" type="button" aria-label="Instalar o Ritmo" title="Instalar o Ritmo" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>
+          <span class="install-pulse" aria-hidden="true"></span>
+        </button>
+        <button id="theme-toggle" class="icon-btn" type="button" aria-label="Mudar para o tema escuro" title="Mudar tema">
+          <svg class="icon" aria-hidden="true"><use id="theme-icon-use" href="#i-moon"></use></svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="offline-banner" class="offline-banner" role="status" hidden>
+      <span class="status-dot status-dot--amber" aria-hidden="true"></span>
+      Você está offline. O Ritmo continua funcionando.
+    </div>
+
+    <main id="main" class="main" tabindex="-1">
+      <!-- HOJE -->
+      <section id="view-hoje" class="view" data-view="hoje" aria-labelledby="today-title">
+        <div class="page-head">
+          <p class="eyebrow" id="greeting">Olá</p>
+          <h1 id="today-title">Hoje</h1>
+          <p class="subtitle" id="today-date"></p>
+        </div>
+
+        <article class="hero" id="hero" aria-labelledby="hero-title">
+          <span class="hero-orbit hero-orbit--one" aria-hidden="true"></span>
+          <span class="hero-orbit hero-orbit--two" aria-hidden="true"></span>
+          <div class="hero-main">
+            <p class="hero-kicker" id="hero-kicker">Seu dia</p>
+            <h2 class="hero-title" id="hero-title">Pronto para o seu ritmo?</h2>
+            <p class="hero-copy" id="hero-copy">Pequenos passos, todos os dias.</p>
+            <span class="streak-chip" id="streak-chip" hidden>
+              <span aria-hidden="true" id="streak-icon">🔥</span>
+              <span id="streak-text"></span>
+            </span>
+          </div>
+          <div class="ring" id="ring" role="img" aria-label="0 de 0 hábitos concluídos hoje">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <defs>
+                <linearGradient id="ring-gradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#ffffff"/>
+                  <stop offset="1" stop-color="#7cf2d4"/>
+                </linearGradient>
+              </defs>
+              <circle class="ring-track" cx="60" cy="60" r="50"></circle>
+              <circle class="ring-value" id="ring-value" cx="60" cy="60" r="50"></circle>
+            </svg>
+            <div class="ring-label">
+              <strong id="ring-count">0/0</strong>
+              <span id="ring-caption">feitos</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="section-head">
+          <h2>Seus hábitos</h2>
+          <span class="soft-pill" id="today-count-pill">0 para hoje</span>
+        </div>
+
+        <div id="today-list" class="habit-list" role="list"></div>
+
+        <div id="today-empty" class="empty-state" hidden>
+          <div class="empty-art" aria-hidden="true">
+            <span class="empty-emoji">🌱</span>
+            <span class="empty-spark empty-spark--one">✦</span>
+            <span class="empty-spark empty-spark--two">✦</span>
+          </div>
+          <h3>Seu ritmo começa agora</h3>
+          <p>Crie seu primeiro hábito e transforme intenção em pequenas vitórias diárias.</p>
+          <div class="empty-actions">
+            <button id="empty-create" class="btn btn-primary" type="button">
+              <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Criar primeiro hábito
+            </button>
+            <button id="empty-sample" class="btn btn-ghost" type="button">Explorar com exemplos</button>
+          </div>
+        </div>
+
+        <div id="rest-state" class="empty-state empty-state--rest" hidden>
+          <div class="empty-art empty-art--small" aria-hidden="true">
+            <span class="empty-emoji">🌿</span>
+          </div>
+          <h3>Dia de respirar</h3>
+          <p>Nenhum hábito está agendado para hoje. Aproveite o descanso — ele também faz parte do ritmo.</p>
+          <button id="rest-create" class="btn btn-ghost" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+            Agendar um hábito para hoje
+          </button>
+        </div>
+
+        <p class="micro-hint" id="week-hint" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
+          Toque nos dias da semana para ajustar o histórico de um hábito.
+        </p>
+      </section>
+
+      <!-- PROGRESSO -->
+      <section id="view-progresso" class="view" data-view="progresso" aria-labelledby="progress-title" hidden>
+        <div class="page-head">
+          <p class="eyebrow">Sua constância</p>
+          <h1 id="progress-title">Progresso</h1>
+          <p class="subtitle">Uma visão gentil dos seus últimos 30 dias.</p>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card stat-card--violet">
+            <p class="stat-label">Conclusão · 30d</p>
+            <p class="stat-value"><span id="stat-rate">0</span><span class="stat-unit">%</span></p>
+            <div class="stat-track" aria-hidden="true"><span id="stat-rate-bar" style="width:0%"></span></div>
+          </article>
+          <article class="stat-card stat-card--mint">
+            <p class="stat-label">Sequência atual</p>
+            <p class="stat-value"><span id="stat-streak">0</span><span class="stat-unit"> dias</span></p>
+            <p class="stat-foot">dias completos</p>
+          </article>
+          <article class="stat-card stat-card--amber">
+            <p class="stat-label">Check-ins</p>
+            <p class="stat-value" id="stat-checkins">0</p>
+            <p class="stat-foot">desde o início</p>
+          </article>
+          <article class="stat-card stat-card--coral">
+            <p class="stat-label">Melhor sequência</p>
+            <p class="stat-value"><span id="stat-best">0</span><span class="stat-unit"> dias</span></p>
+            <p class="stat-foot">seu recorde</p>
+          </article>
+        </div>
+
+        <section class="panel" aria-labelledby="week-chart-title">
+          <div class="panel-head">
+            <div>
+              <h2 id="week-chart-title">Últimos 7 dias</h2>
+              <p class="panel-sub">Hábitos concluídos por dia</p>
+            </div>
+            <span class="soft-pill" id="week-average">—</span>
+          </div>
+          <div id="week-chart" class="chart" role="img" aria-label="Gráfico de conclusão dos últimos sete dias"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="heatmap-title">
+          <div class="panel-head">
+            <div>
+              <h2 id="heatmap-title">Seu ritmo</h2>
+              <p class="panel-sub">As últimas quatro semanas</p>
+            </div>
+            <span class="soft-pill" id="heatmap-caption">—</span>
+          </div>
+          <div class="heatmap-head" aria-hidden="true">
+            <span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span><span>D</span>
+          </div>
+          <div id="heatmap" class="heatmap" role="img" aria-label="Mapa de calor de hábitos das últimas quatro semanas"></div>
+          <div class="heatmap-legend" aria-hidden="true">
+            <span>Menos</span>
+            <i class="heat-cell" data-level="0"></i>
+            <i class="heat-cell" data-level="1"></i>
+            <i class="heat-cell" data-level="2"></i>
+            <i class="heat-cell" data-level="3"></i>
+            <i class="heat-cell" data-level="4"></i>
+            <span>Mais</span>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="breakdown-title">
+          <div class="panel-head">
+            <div>
+              <h2 id="breakdown-title">Por hábito</h2>
+              <p class="panel-sub">Conclusão nos últimos 30 dias</p>
+            </div>
+          </div>
+          <div id="breakdown" class="breakdown"></div>
+          <div id="progress-empty" class="mini-empty" hidden>
+            <span aria-hidden="true">📊</span>
+            <p>Seus gráficos aparecem aqui assim que você criar um hábito.</p>
+            <button id="progress-create" class="btn btn-ghost btn-small" type="button">Criar hábito</button>
+          </div>
+        </section>
+      </section>
+
+      <!-- AJUSTES -->
+      <section id="view-ajustes" class="view" data-view="ajustes" aria-labelledby="settings-title" hidden>
+        <div class="page-head">
+          <p class="eyebrow">Do seu jeito</p>
+          <h1 id="settings-title">Ajustes</h1>
+          <p class="subtitle">Deixe o Ritmo com a sua cara.</p>
+        </div>
+
+        <section class="settings-group" aria-labelledby="appearance-heading">
+          <h2 class="group-title" id="appearance-heading">Aparência</h2>
+          <div class="setting-card">
+            <div class="theme-options" role="group" aria-label="Tema do aplicativo">
+              <button class="theme-option" type="button" data-theme-choice="light" aria-pressed="false">
+                <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
+                <span>Claro</span>
+              </button>
+              <button class="theme-option" type="button" data-theme-choice="dark" aria-pressed="false">
+                <svg class="icon" aria-hidden="true"><use href="#i-moon"></use></svg>
+                <span>Escuro</span>
+              </button>
+              <button class="theme-option" type="button" data-theme-choice="system" aria-pressed="false">
+                <svg class="icon" aria-hidden="true"><use href="#i-monitor"></use></svg>
+                <span>Sistema</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-group" aria-labelledby="app-heading">
+          <h2 class="group-title" id="app-heading">Aplicativo</h2>
+          <div class="setting-card setting-card--list">
+            <div class="setting-row" id="install-row">
+              <span class="setting-icon setting-icon--violet" aria-hidden="true">
+                <svg class="icon"><use href="#i-download"></use></svg>
+              </span>
+              <div class="setting-copy">
+                <p id="install-title">Instalar o Ritmo</p>
+                <p id="install-copy">Abra como um app, em tela cheia e offline.</p>
+              </div>
+              <button id="install-settings" class="btn btn-small btn-primary" type="button">Instalar</button>
+              <span class="status-pill" id="install-status" hidden>Instalado</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-icon setting-icon--mint" aria-hidden="true">
+                <svg class="icon"><use href="#i-shield"></use></svg>
+              </span>
+              <div class="setting-copy">
+                <p id="offline-title">Disponível offline</p>
+                <p id="offline-copy">Seus dados ficam salvos apenas neste dispositivo.</p>
+              </div>
+              <span class="status-pill" id="offline-pill">Preparando</span>
+            </div>
+          </div>
+          <p class="group-note">Dica: depois de instalar, o Ritmo abre em tela cheia e funciona sem internet.</p>
+        </section>
+
+        <section class="settings-group" aria-labelledby="data-heading">
+          <h2 class="group-title" id="data-heading">Seus dados</h2>
+          <div class="setting-card setting-card--list">
+            <button class="setting-row setting-row--button" id="export-btn" type="button">
+              <span class="setting-icon setting-icon--blue" aria-hidden="true">
+                <svg class="icon"><use href="#i-download"></use></svg>
+              </span>
+              <span class="setting-copy">
+                <span class="setting-title">Exportar backup</span>
+                <span class="setting-sub">Baixe um arquivo .json com tudo.</span>
+              </span>
+              <svg class="icon setting-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </button>
+            <button class="setting-row setting-row--button" id="import-btn" type="button">
+              <span class="setting-icon setting-icon--amber" aria-hidden="true">
+                <svg class="icon"><use href="#i-upload"></use></svg>
+              </span>
+              <span class="setting-copy">
+                <span class="setting-title">Importar backup</span>
+                <span class="setting-sub">Restaure hábitos de outro dispositivo.</span>
+              </span>
+              <svg class="icon setting-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </button>
+            <button class="setting-row setting-row--button setting-row--danger" id="reset-btn" type="button">
+              <span class="setting-icon setting-icon--coral" aria-hidden="true">
+                <svg class="icon"><use href="#i-trash"></use></svg>
+              </span>
+              <span class="setting-copy">
+                <span class="setting-title">Apagar todos os dados</span>
+                <span class="setting-sub">Remove hábitos e histórico deste dispositivo.</span>
+              </span>
+              <svg class="icon setting-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </button>
+          </div>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
+          <p class="group-note">O Ritmo não envia nada para servidores. Faça backups de vez em quando. 🔒</p>
+        </section>
+
+        <section class="settings-group" aria-labelledby="about-heading">
+          <h2 class="group-title" id="about-heading">Sobre</h2>
+          <div class="about-card">
+            <img src="./assets/icons/icon-192.png" alt="" width="54" height="54" class="about-logo">
+            <div class="about-head">
+              <p class="about-name">Ritmo <span class="about-version" id="app-version">v1.0.0</span></p>
+              <p class="about-tagline">Hábitos que fluem, no seu tempo.</p>
+            </div>
+            <p class="about-copy">Um PWA feito com HTML, CSS e JavaScript puro — sem contas, sem rastreadores, sem complicação.</p>
+            <a class="about-link" id="source-link" href="https://github.com/srend69/ritmo-pwa" target="_blank" rel="noopener noreferrer">
+              <svg class="icon" aria-hidden="true"><use href="#i-code"></use></svg>
+              Ver código-fonte no GitHub
+              <svg class="icon about-external" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </a>
+          </div>
+          <p class="footer-note">Feito com carinho para o seu dia a dia. 🍃</p>
+        </section>
+      </section>
+    </main>
+
+    <button id="fab" class="fab" type="button" aria-label="Criar novo hábito">
+      <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+      <span>Novo hábito</span>
+    </button>
+
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <a class="nav-item" href="#hoje" data-nav="hoje" aria-current="page">
+        <svg class="icon" aria-hidden="true"><use href="#i-sunrise"></use></svg>
+        <span>Hoje</span>
+      </a>
+      <a class="nav-item" href="#progresso" data-nav="progresso">
+        <svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>
+        <span>Progresso</span>
+      </a>
+      <a class="nav-item" href="#ajustes" data-nav="ajustes">
+        <svg class="icon" aria-hidden="true"><use href="#i-sliders"></use></svg>
+        <span>Ajustes</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- NOVO / EDITAR HÁBITO -->
+  <dialog id="habit-dialog" class="sheet" aria-labelledby="habit-dialog-title">
+    <form id="habit-form" novalidate>
+      <div class="sheet-grabber" aria-hidden="true"></div>
+      <header class="sheet-head">
+        <div>
+          <p class="eyebrow" id="habit-dialog-eyebrow">Novo hábito</p>
+          <h2 id="habit-dialog-title">O que quer cultivar?</h2>
+        </div>
+        <button class="icon-btn sheet-close" type="button" data-close-dialog aria-label="Fechar">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </header>
+
+      <div class="sheet-body">
+        <div class="field">
+          <div class="field-label-row">
+            <label class="field-label" for="habit-name">Nome do hábito</label>
+            <span class="char-count" id="name-count">0/40</span>
+          </div>
+          <input id="habit-name" name="name" type="text" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder="Ex.: Beber 2L de água" aria-describedby="name-error" required>
+          <p class="field-error" id="name-error" hidden>Dê um nome ao seu hábito.</p>
+        </div>
+
+        <div class="field">
+          <span class="field-label" id="emoji-label">Emoji</span>
+          <div class="emoji-row" role="group" aria-labelledby="emoji-label">
+            <button type="button" class="emoji-option" data-emoji="💧" aria-label="Emoji gota">💧</button>
+            <button type="button" class="emoji-option" data-emoji="📚" aria-label="Emoji livros">📚</button>
+            <button type="button" class="emoji-option" data-emoji="🏃" aria-label="Emoji corrida">🏃</button>
+            <button type="button" class="emoji-option" data-emoji="🧘" aria-label="Emoji meditação">🧘</button>
+            <button type="button" class="emoji-option" data-emoji="🥗" aria-label="Emoji salada">🥗</button>
+            <button type="button" class="emoji-option" data-emoji="😴" aria-label="Emoji sono">😴</button>
+            <button type="button" class="emoji-option" data-emoji="💪" aria-label="Emoji força">💪</button>
+            <button type="button" class="emoji-option" data-emoji="🎯" aria-label="Emoji alvo">🎯</button>
+            <button type="button" class="emoji-option" data-emoji="✍️" aria-label="Emoji escrita">✍️</button>
+            <button type="button" class="emoji-option" data-emoji="🎸" aria-label="Emoji violão">🎸</button>
+          </div>
+          <div class="emoji-custom">
+            <label class="field-hint" for="habit-emoji">Ou digite outro</label>
+            <input id="habit-emoji" name="emoji" type="text" maxlength="8" value="💧" aria-label="Outro emoji" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="field" role="group" aria-labelledby="color-label">
+          <span class="field-label" id="color-label">Cor</span>
+          <div class="color-row">
+            <label class="color-option" style="--swatch:#6c5ce7">
+              <input type="radio" name="color" value="violet" checked>
+              <span class="sr-only">Violeta</span>
+            </label>
+            <label class="color-option" style="--swatch:#0e9f6e">
+              <input type="radio" name="color" value="mint">
+              <span class="sr-only">Verde</span>
+            </label>
+            <label class="color-option" style="--swatch:#2f80ed">
+              <input type="radio" name="color" value="blue">
+              <span class="sr-only">Azul</span>
+            </label>
+            <label class="color-option" style="--swatch:#e84a5f">
+              <input type="radio" name="color" value="coral">
+              <span class="sr-only">Coral</span>
+            </label>
+            <label class="color-option" style="--swatch:#d63384">
+              <input type="radio" name="color" value="pink">
+              <span class="sr-only">Rosa</span>
+            </label>
+            <label class="color-option" style="--swatch:#b7791f">
+              <input type="radio" name="color" value="amber">
+              <span class="sr-only">Âmbar</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field" role="group" aria-labelledby="days-label">
+          <div class="field-label-row">
+            <span class="field-label" id="days-label">Dias da semana</span>
+            <span class="quick-days">
+              <button type="button" data-days-preset="all">Todos</button>
+              <button type="button" data-days-preset="weekdays">Dias úteis</button>
+            </span>
+          </div>
+          <div class="days-row" id="days-row">
+            <button type="button" class="day-toggle" data-day="1" aria-pressed="true" aria-label="Segunda-feira">S</button>
+            <button type="button" class="day-toggle" data-day="2" aria-pressed="true" aria-label="Terça-feira">T</button>
+            <button type="button" class="day-toggle" data-day="3" aria-pressed="true" aria-label="Quarta-feira">Q</button>
+            <button type="button" class="day-toggle" data-day="4" aria-pressed="true" aria-label="Quinta-feira">Q</button>
+            <button type="button" class="day-toggle" data-day="5" aria-pressed="true" aria-label="Sexta-feira">S</button>
+            <button type="button" class="day-toggle" data-day="6" aria-pressed="true" aria-label="Sábado">S</button>
+            <button type="button" class="day-toggle" data-day="0" aria-pressed="true" aria-label="Domingo">D</button>
+          </div>
+          <p class="field-error" id="days-error" hidden>Escolha pelo menos um dia.</p>
+        </div>
+      </div>
+
+      <footer class="sheet-footer">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Cancelar</button>
+        <button class="btn btn-primary" type="submit" id="save-habit-btn">Salvar hábito</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- OPÇÕES DO HÁBITO -->
+  <dialog id="options-dialog" class="sheet sheet--compact" aria-labelledby="options-title">
+    <div class="sheet-grabber" aria-hidden="true"></div>
+    <header class="sheet-head">
+      <div class="options-heading">
+        <span class="options-emoji" id="options-emoji" aria-hidden="true">💧</span>
+        <div>
+          <p class="eyebrow">Hábito</p>
+          <h2 id="options-title">Opções</h2>
+        </div>
+      </div>
+      <button class="icon-btn sheet-close" type="button" data-close-dialog aria-label="Fechar">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+      </button>
+    </header>
+    <div class="options-list">
+      <button class="options-item" id="edit-habit-btn" type="button">
+        <span class="options-item-icon" aria-hidden="true"><svg class="icon"><use href="#i-pencil"></use></svg></span>
+        Editar hábito
+        <svg class="icon options-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+      </button>
+      <button class="options-item options-item--danger" id="delete-habit-btn" type="button">
+        <span class="options-item-icon" aria-hidden="true"><svg class="icon"><use href="#i-trash"></use></svg></span>
+        Excluir hábito
+        <svg class="icon options-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+      </button>
+    </div>
+    <footer class="sheet-footer">
+      <button class="btn btn-ghost btn-full" type="button" data-close-dialog>Cancelar</button>
+    </footer>
+  </dialog>
+
+  <!-- CONFIRMAÇÃO -->
+  <dialog id="confirm-dialog" class="sheet sheet--compact" aria-labelledby="confirm-title">
+    <div class="sheet-grabber" aria-hidden="true"></div>
+    <div class="confirm-body">
+      <span class="confirm-icon" id="confirm-icon" aria-hidden="true">!</span>
+      <h2 id="confirm-title">Confirmar ação</h2>
+      <p id="confirm-message"></p>
+    </div>
+    <footer class="sheet-footer">
+      <button class="btn btn-ghost" type="button" data-close-dialog>Cancelar</button>
+      <button class="btn btn-danger" type="button" id="confirm-action">Confirmar</button>
+    </footer>
+  </dialog>
+
+  <!-- INSTALAÇÃO MANUAL -->
+  <dialog id="install-dialog" class="sheet sheet--compact" aria-labelledby="install-dialog-title">
+    <div class="sheet-grabber" aria-hidden="true"></div>
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Vai com você</p>
+        <h2 id="install-dialog-title">Instalar o Ritmo</h2>
+      </div>
+      <button class="icon-btn sheet-close" type="button" data-close-dialog aria-label="Fechar">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+      </button>
+    </header>
+    <div class="sheet-body">
+      <p class="install-intro">Leve o Ritmo para a tela inicial e use como um aplicativo, com tela cheia e offline.</p>
+      <div class="install-step">
+        <span class="install-step-number" aria-hidden="true">1</span>
+        <div>
+          <p class="install-step-title">No iPhone ou iPad</p>
+          <p class="install-step-copy">Abra no <strong>Safari</strong>, toque em <svg class="icon icon-inline" aria-hidden="true"><use href="#i-share"></use></svg> <strong>Compartilhar</strong> e escolha <strong>Adicionar à Tela de Início</strong>.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <span class="install-step-number" aria-hidden="true">2</span>
+        <div>
+          <p class="install-step-title">No Android</p>
+          <p class="install-step-copy">No <strong>Chrome</strong>, toque no menu <strong>⋮</strong> e escolha <strong>Instalar aplicativo</strong> ou <strong>Adicionar à tela inicial</strong>.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <span class="install-step-number" aria-hidden="true">3</span>
+        <div>
+          <p class="install-step-title">No computador</p>
+          <p class="install-step-copy">Clique no ícone de instalação na barra de endereços do navegador.</p>
+        </div>
+      </div>
+    </div>
+    <footer class="sheet-footer">
+      <button class="btn btn-primary btn-full" type="button" data-close-dialog>Entendi</button>
+    </footer>
+  </dialog>
+
+  <!-- BOAS-VINDAS -->
+  <dialog id="welcome-dialog" class="sheet sheet--compact welcome" aria-labelledby="welcome-title">
+    <div class="welcome-hero" aria-hidden="true">
+      <span class="welcome-orb welcome-orb--one"></span>
+      <span class="welcome-orb welcome-orb--two"></span>
+      <img src="./assets/icons/icon-192.png" alt="" width="82" height="82" class="welcome-logo">
+    </div>
+    <div class="welcome-body">
+      <p class="eyebrow">Bem-vindo ao Ritmo</p>
+      <h2 id="welcome-title">Grandes mudanças começam pequenas.</h2>
+      <p class="welcome-copy">Escolha hábitos simples, marque cada vitória e acompanhe seu ritmo — sem cobranças, no seu tempo.</p>
+      <ul class="welcome-points">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg> Funciona offline e instala no celular</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg> Seus dados ficam só neste dispositivo</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg> Simples o bastante para usar todo dia</li>
+      </ul>
+    </div>
+    <footer class="sheet-footer sheet-footer--stack">
+      <button class="btn btn-primary btn-full" type="button" id="welcome-start">Começar do zero</button>
+      <button class="btn btn-ghost btn-full" type="button" id="welcome-demo">Explorar com hábitos de exemplo</button>
+    </footer>
+  </dialog>
+
+  <!-- NOVA VERSÃO -->
+  <div class="update-banner" id="update-banner" role="status" hidden>
+    <span>Uma nova versão do Ritmo está pronta.</span>
+    <button class="update-btn" id="update-button" type="button">Atualizar</button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
+
+  <template id="habit-template">
+    <article class="habit-card" role="listitem">
+      <div class="habit-top">
+        <button class="habit-check" type="button" role="checkbox" aria-checked="false">
+          <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+        </button>
+        <div class="habit-content">
+          <div class="habit-heading">
+            <h3 class="habit-title">
+              <span class="habit-emoji" aria-hidden="true"></span>
+              <span class="habit-name"></span>
+            </h3>
+            <button class="habit-menu icon-btn" type="button" aria-haspopup="dialog" aria-label="Opções do hábito">
+              <svg class="icon" aria-hidden="true"><use href="#i-more"></use></svg>
+            </button>
+          </div>
+          <p class="habit-meta">
+            <span class="habit-schedule"></span>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="habit-streak"></span>
+          </p>
+        </div>
+      </div>
+      <div class="week-strip" role="group"></div>
+    </article>
+  </template>
+
+  <noscript>
+    <div class="noscript">O Ritmo precisa de JavaScript para salvar e exibir seus hábitos.</div>
+  </noscript>
+
+  <script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>
