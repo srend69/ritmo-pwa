@@ -2,6 +2,7 @@
 
 PWA em português para acompanhar hábitos diários. Interface mobile-first, temas claro e escuro, gráficos de constância e funcionamento 100% offline. Os dados ficam apenas no dispositivo, em `localStorage` — sem cadastro, servidor ou rastreamento.
 
+**App publicado:** [https://ritmo-sx4k.onrender.com](https://ritmo-sx4k.onrender.com)  
 Código-fonte: [https://github.com/srend69/ritmo-pwa](https://github.com/srend69/ritmo-pwa)
 
 | Hoje | Progresso |
@@ -63,6 +64,8 @@ python3 scripts/generate_icons.py
 
 ## Publicar no Render
 
+> **Status:** publicado em [https://ritmo-sx4k.onrender.com](https://ritmo-sx4k.onrender.com) como Static Site, com deploy automático a cada push em `main`.
+
 ### Opção A — Blueprint (recomendado)
 
 1. Crie um repositório no GitHub e envie os arquivos:
@@ -86,7 +89,7 @@ python3 scripts/generate_icons.py
 
 2. No [Render](https://render.com), escolha **New → Blueprint** e conecte o repositório.
 3. Confirme o serviço `ritmo` descrito em `render.yaml`. O Render publicará o diretório raiz como site estático.
-4. Ao final, copie a URL `https://<nome>.onrender.com`. O link do repositório já está configurado no topo deste `README.md` e em `#source-link` na tela de Ajustes.
+4. Ao final, copie a URL `https://<nome>.onrender.com`. Neste projeto, a URL é [https://ritmo-sx4k.onrender.com](https://ritmo-sx4k.onrender.com). O link do repositório já está configurado no topo deste `README.md` e em `#source-link` na tela de Ajustes.
 
 ### Opção B — Site estático manual
 
