@@ -64,7 +64,7 @@ python3 scripts/generate_icons.py
 
 ## Publicar no Render
 
-> **Status:** publicado em [https://ritmo-sx4k.onrender.com](https://ritmo-sx4k.onrender.com) como Static Site, com deploy automático a cada push em `main`.
+> **Status:** publicado em [https://ritmo-sx4k.onrender.com](https://ritmo-sx4k.onrender.com) como Static Site. Como o serviço foi criado a partir da URL pública do repositório, os próximos deploys são manuais (Dashboard, CLI ou API).
 
 ### Opção A — Blueprint (recomendado)
 
@@ -99,7 +99,15 @@ python3 scripts/generate_icons.py
    - **Build Command:** deixe vazio
    - **Publish Directory:** `.`
 3. Como não há build, o `render.yaml` já concentra os cabeçalhos de segurança e cache. Para a opção manual, você pode copiá-los em **Headers** ou conectar via Blueprint depois.
-4. Cada push em `main` republica o site automaticamente.
+4. Para publicar uma atualização, use **Manual Deploy → Deploy latest commit** no Dashboard. Com um provedor Git conectado ao Render, o deploy pode ser automático a cada push em `main`.
+
+### Atualizar o site publicado
+
+No Dashboard do Render, abra o serviço `ritmo` e escolha **Manual Deploy → Deploy latest commit**. Também é possível usar o CLI:
+
+```bash
+render deploys create srv-dbfk6n67bikc73dskd6g --wait
+```
 
 > O HTTPS do Render é obrigatório para o service worker e a instalação da PWA. O plano gratuito do Render pode suspender sites inativos; o primeiro acesso depois disso pode levar alguns segundos.
 
